@@ -2,6 +2,7 @@
 #include <PubSubClient.h>
 #include <WiFi.h>
 #include <ArduinoJson.h>
+#include "secret.h"
 
 // Definisi pin JSN-SR04T 
 #define pintrig 12
@@ -26,9 +27,6 @@ bool statusToren = false;
 #define jarakMinSensor 20 //cm
 
 
-// Konfigurasi WIFI
-const char* ssid = "WIFI_NAME"; 
-const char* password = "WIFI_PASSWORD"; 
 
 // Konfigurasi MQTT
 const char* mqtt_server = "broker.hivemq.com";
@@ -45,7 +43,7 @@ PubSubClient client(espClient);
 void setup_wifi(){
   delay(10);
   Serial.println("Menghubungkan ke WiFi....");
-  WiFi.begin(ssid, password);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while(WiFi.status() != WL_CONNECTED){
     delay(500);
     Serial.print(".");
@@ -91,7 +89,7 @@ void sendJSON(float jarakRatarata, bool statusPompa, float volumeTerukur, bool s
   Serial.println(jsonData);
 
   // mengirim data json ke broker
-  if (client.publish(topic, jsonData.c_str())){
+  if (client.publish(MQTT_TOPIC, jsonData.c_str())){
     Serial.println("Data berhasil dikirim ke broker MQTT");
   } else{
     Serial.println("Gagal mengirim data");
@@ -113,7 +111,7 @@ void setup() {
   pinMode(pinRelay, OUTPUT);
 
   setup_wifi();
-  client.setServer(mqtt_server, mqtt_port);
+  client.setServer(MQTT_BROKER, MQTT_PORT);
 }
 
 void loop() {
